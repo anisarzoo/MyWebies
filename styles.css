@@ -1305,12 +1305,12 @@ body {
 
 .public-link-item {
     display: flex;
-    flex-direction: column;
-    /* Vertical stack */
+    flex-direction: row;
+    /* Horizontal row */
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 20px;
+    justify-content: flex-start;
+    gap: 15px;
+    padding: 16px 20px;
     background: var(--link-item-bg);
     border: 1px solid var(--link-item-border);
     border-radius: 16px;
@@ -1318,7 +1318,7 @@ body {
     color: var(--text-main);
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: var(--link-item-shadow);
-    text-align: center;
+    text-align: left;
 }
 
 .public-link-item:hover {
@@ -1347,7 +1347,7 @@ body {
 
 .public-link-content {
     flex: 1;
-    text-align: center;
+    text-align: left;
     min-width: 0;
     width: 100%;
 }
@@ -1574,12 +1574,16 @@ body {
 
 @media (max-width: 480px) {
     .screen {
-        padding: 12px;
+        padding: 8px;
+    }
+
+    .dashboard-content {
+        padding: 10px 5px;
     }
 
     .profile-header,
     .links-section {
-        padding: 20px 15px;
+        padding: 20px 12px;
         border-radius: 20px;
     }
 
@@ -1605,23 +1609,37 @@ body {
         text-align: center;
     }
 
+    .public-profile {
+        padding: 20px 10px !important;
+    }
+
+    .modal-content,
+    .profile-card {
+        margin: 0 !important;
+        padding: 30px 15px !important;
+        width: 100% !important;
+        border-radius: 20px !important;
+    }
+
     .link-item {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-        padding: 22px 12px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+        text-align: left;
+        padding: 16px 12px;
     }
 
     .link-actions {
         width: 100%;
-        flex-direction: column;
+        flex-direction: row;
         gap: 8px;
+        margin-top: 5px;
     }
 
     .edit-link-btn,
     .delete-link-btn {
-        width: 100%;
-        padding: 12px !important;
+        flex: 1;
+        padding: 10px !important;
         display: flex;
         justify-content: center;
         align-items: center;
