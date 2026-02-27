@@ -157,7 +157,14 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="profilePictureSection">Profile Picture</label>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <label for="profilePictureSection" style="margin-bottom: 0;">Profile Picture</label>
+                        <div class="info-icon-wrapper">
+                            <i class="fas fa-info-circle info-icon"></i>
+                            <span class="info-tooltip">Upload a custom picture or keep your Google profile
+                                picture.</span>
+                        </div>
+                    </div>
                     <div class="profile-picture-section">
                         <img id="currentProfilePic" src="" alt="Current Profile Picture" class="current-profile-pic">
                         <div class="profile-pic-actions">
@@ -171,11 +178,6 @@
                                     title="Remove Custom Picture">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
-                                <div class="info-icon-wrapper">
-                                    <i class="fas fa-info-circle info-icon"></i>
-                                    <span class="info-tooltip">Upload a custom picture or keep your Google profile
-                                        picture.</span>
-                                </div>
                             </div>
                         </div>
                     </div>
