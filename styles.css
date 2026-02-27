@@ -1189,68 +1189,69 @@ body {
 /* =========================================
    10. Mobile Responsiveness
    ========================================= */
-.auth-card {
-    padding: 30px 20px;
-    margin: 20px;
-    width: calc(100% - 40px);
-    /* Account for margins */
-}
+@media (max-width: 768px) {
+    .auth-card {
+        padding: 30px 20px;
+        margin: 20px;
+        width: calc(100% - 40px);
+        /* Account for margins */
+    }
 
-.dashboard-content {
-    padding: 20px 15px;
-    width: 100%;
-}
+    .dashboard-content {
+        padding: 20px 15px;
+        width: 100%;
+    }
 
-.profile-header {
-    flex-direction: column;
-    text-align: center;
-    padding: 25px 20px;
-    width: 100%;
-}
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 25px 20px;
+        width: 100%;
+    }
 
-.profile-details h2 {
-    font-size: 1.5rem;
-    /* Smaller font on mobile */
-}
+    .profile-details h2 {
+        font-size: 1.5rem;
+        /* Smaller font on mobile */
+    }
 
-.profile-url {
-    font-size: 0.9rem;
-    word-break: break-all;
-    /* Prevent long URLs from overflowing */
-}
+    .profile-url {
+        font-size: 0.9rem;
+        word-break: break-all;
+        /* Prevent long URLs from overflowing */
+    }
 
-.profile-info {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-}
+    .profile-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
 
-.section-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: stretch;
-}
+    .section-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
 
-.link-item {
-    padding: 15px;
-}
+    .link-item {
+        padding: 15px;
+    }
 
-.link-actions {
-    flex-direction: column;
-}
+    .link-actions {
+        flex-direction: column;
+    }
 
-.modal-content,
-.profile-card {
-    margin: 20px;
-    padding: 30px 20px;
-    width: calc(100% - 40px);
-}
+    .modal-content,
+    .profile-card {
+        margin: 20px;
+        padding: 30px 20px;
+        width: calc(100% - 40px);
+    }
 
-.modal-header,
-.modal-body {
-    padding-left: 20px;
-    padding-right: 20px;
-}
+    .modal-header,
+    .modal-body {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 }
 
 @media (max-width: 480px) {
