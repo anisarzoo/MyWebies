@@ -110,6 +110,7 @@ function hideLoading() {
 function showScreen(screen) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     screen.classList.add('active');
+    hideLoading();
 }
 
 function showToast(message, type = 'info') {
@@ -852,6 +853,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     } catch (error) {
                         console.error('Error loading user data:', error);
                         showToast('Failed to load user data', 'error');
+                        hideLoading();
                     }
                 } else {
                     currentUser = null;
