@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWebies - Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Cropper.js CSS -->
+    <link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="auth-card">
+            <div class="logo">
+                <i class="fas fa-link"></i>
+                <h1>MyWebies</h1>
+            </div>
+            <p class="subtitle">Create your personalized link collection</p>
+            <button id="googleLoginBtn" class="google-btn">
+                <i class="fab fa-google"></i>
+                Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- Username Selection Screen -->
+    <div id="usernameScreen" class="screen">
+        <div class="auth-card">
+            <div class="user-info">
+                <img id="userAvatar" src="" alt="User Avatar" class="avatar">
+                <h2 id="userDisplayName"></h2>
+            </div>
+            <h3>Choose your username</h3>
+            <p class="subtitle">This will be your public profile URL</p>
+            <div class="username-input-container">
+                <div class="url-preview">
+                    <span class="base-url">mywebies.com/</span>
+                    <input type="text" id="usernameInput" placeholder="username" maxlength="20">
+                </div>
+                <div id="usernameStatus" class="username-status"></div>
+            </div>
+            <div class="username-rules">
+                <p>Username must be 3-20 characters, letters, numbers, and underscores only</p>
+            </div>
+            <button id="confirmUsernameBtn" class="confirm-btn" disabled>Continue</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" class="screen">
+        <!-- Navbar removed -->
+
+        <div class="dashboard-content">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <img id="dashUserAvatar" src="" alt="User" class="profile-avatar">
+                    <div class="profile-details">
+                        <h2 id="dashDisplayName"></h2>
+                        <p class="profile-url">mywebies.com/<span id="dashUsername"></span></p>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button id="viewPublicBtn" class="view-public-btn">
+                                <i class="fas fa-external-link-alt"></i>
+                                View Public Profile
+                            </button>
+                            <button id="shareProfileBtn" class="view-public-btn" title="Share Profile"
+                                style="background: #764ba2;">
+                                <i class="fas fa-share-alt"></i>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button id="editProfileBtn" class="edit-profile-btn">
+                        <i class="fas fa-edit"></i>
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+
+
+
+            <div class="links-section">
+                <div class="section-header">
+                    <h3>Your Links</h3>
+                    <button id="addLinkBtn" class="add-link-btn">
+                        <i class="fas fa-plus"></i>
+                        Add Link
+                    </button>
+                </div>
+                <div id="linksList" class="links-list">
+                    <!-- Links will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Link Modal -->
+    <div id="linkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Link</h3>
+                <button id="closeModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="linkIcon">Icon (emoji or text)</label>
+                    <div id="defaultIconsRow" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                        <button type="button" class="icon-suggestion" title="Twitter"><i
+                                class="fab fa-twitter"></i></button>
+                        <button type="button" class="icon-suggestion" title="Snapchat"><i
+                                class="fab fa-snapchat"></i></button>
+                        <button type="button" class="icon-suggestion" title="Instagram"><i
+                                class="fab fa-instagram"></i></button>
+                        <button type="button" class="icon-suggestion" title="Facebook"><i
+                                class="fab fa-facebook"></i></button>
+                        <button type="button" class="icon-suggestion" title="YouTube"><i
+                                class="fab fa-youtube"></i></button>
+                        <button type="button" class="icon-suggestion" title="Google Maps"><i
+                                class="fas fa-location-dot"></i></button>
+                        <button type="button" class="icon-suggestion" title="Spotify"><i
+                                class="fab fa-spotify"></i></button>
+                        <button type="button" class="icon-suggestion" title="TikTok"><i
+                                class="fab fa-tiktok"></i></button>
+                    </div>
+                    <input type="text" id="linkIcon" placeholder="🔗 or text" maxlength="10">
+                </div>
+                <div class="form-group">
+                    <label for="linkTitle">Title</label>
+                    <input type="text" id="linkTitle" placeholder="Enter link title" required>
+                </div>
+                <div class="form-group">
+                    <label for="linkUrl">URL</label>
+                    <input type="url" id="linkUrl" placeholder="https://example.com" required>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancelLinkBtn" class="cancel-btn">Cancel</button>
+                    <button id="saveLinkBtn" class="save-btn">Save Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button id="closeEditProfileModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="profilePictureSection">Profile Picture</label>
+                    <div class="profile-picture-section">
+                        <img id="currentProfilePic" src="" alt="Current Profile Picture" class="current-profile-pic">
+                        <div class="profile-pic-actions">
+                            <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+                            <button type="button" id="uploadProfilePicBtn" class="upload-pic-btn">
+                                <i class="fas fa-camera"></i>
+                                Choose New Picture
+                            </button>
+                            <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 8px;">
+                                Upload a custom profile picture or keep your Google profile picture.
+                            </small>
+                        </div>
+                    </div>
+                    <!-- Crop Modal -->
+                    <div id="cropModal"
+                        style="display:none; position:fixed; z-index:10001; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+                        <div
+                            style="background:#fff; padding:24px; border-radius:12px; max-width:90vw; max-height:90vh; display:flex; flex-direction:column; align-items:center;">
+                            <h3 style="margin-bottom:12px;">Crop your picture</h3>
+                            <div style="max-width:350px; max-height:350px; overflow:hidden;">
+                                <img id="cropImage" style="max-width:100%; max-height:350px; display:block;" />
+                            </div>
+                            <div style="margin-top:16px; display:flex; gap:12px;">
+                                <button id="cropCancelBtn"
+                                    style="padding:8px 18px; border:none; background:#ccc; border-radius:6px;">Cancel</button>
+                                <button id="cropConfirmBtn"
+                                    style="padding:8px 18px; border:none; background:#667eea; color:#fff; border-radius:6px;">Crop
+                                    & Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editDisplayName">Display Name</label>
+                    <input type="text" id="editDisplayName" placeholder="Your display name" maxlength="40">
+                    <small style="color: #666; font-size: 0.8rem;">You can change your display name. Max 40
+                        characters.</small>
+                </div>
+                <div class="form-group">
+                    <label for="editUsername">Username</label>
+                    <input type="text" id="editUsername" placeholder="Your username" maxlength="20">
+                    <div id="editUsernameStatus" class="username-status"></div>
+                    <small style="color: #666; font-size: 0.8rem;">Username must be unique, 3-20 characters, letters,
+                        numbers, and underscores only.</small>
+                </div>
+                <div class="form-group">
+                    <label for="editBio">Bio</label>
+                    <textarea id="editBio" placeholder="Tell people about yourself..." maxlength="200"
+                        style="width: 100%; min-height: 80px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 12px; font-family: inherit; font-size: 1rem; resize: vertical; transition: border-color 0.3s ease;"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancelEditProfileBtn" class="cancel-btn">Cancel</button>
+                    <button id="saveEditProfileBtn" class="save-btn">Save Changes</button>
+                    <button id="logoutBtn" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Firebase SDKs - Using v9 modular SDK with compatibility layer -->
+    <!-- Firebase v9 compat scripts for ServerValue.TIMESTAMP support -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="config.js"></script>
+
+    <!-- Cropper.js -->
+    <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

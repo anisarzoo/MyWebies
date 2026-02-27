@@ -1,0 +1,89 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && auth.uid == $uid",
+        ".validate": "newData.hasChildren(['uid', 'email', 'displayName', 'username'])",
+        "uid": {
+          ".validate": "newData.val() == $uid"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "displayName": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "photoURL": {
+          ".validate": "newData.isString()"
+        },
+        "username": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-zA-Z0-9_]{3,20}$/)"
+        },
+        "bio": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "links": {
+          "$linkId": {
+            ".validate": "newData.hasChildren(['title', 'url'])",
+            "title": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
+            },
+            "url": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 500"
+            },
+            "icon": {
+              ".validate": "newData.isString() && newData.val().length <= 30"
+            },
+            "order": {
+              ".validate": "newData.isNumber() && newData.val() >= 0"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber()"
+            },
+            "updatedAt": {
+              ".validate": "newData.isNumber()"
+            }
+          }
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    },
+    "usernames": {
+      "$username": {
+        ".read": true,
+        ".write": "auth != null && (!data.exists() || data.val() == auth.uid)",
+        ".validate": "newData.isString() && newData.val() == auth.uid && $username.matches(/^[a-zA-Z0-9_]{3,20}$/)"
+      }
+    },
+    "analytics": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null",
+        "links": {
+          "$linkId": {
+            "clicks": {
+              ".validate": "newData.isNumber() && newData.val() >= 0"
+            },
+            "lastClick": {
+              ".validate": "newData.isNumber()"
+            }
+          }
+        },
+        "profile": {
+          "views": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "lastView": {
+            ".validate": "newData.isNumber()"
+          }
+        }
+      }
+    }
+  }
+}

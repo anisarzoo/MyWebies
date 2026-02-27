@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="profileTitle">Profile - MyWebies</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="public-profile">
+    <div id="profileNotFound" class="profile-not-found" style="display: none;">
+        <div class="error-card">
+            <i class="fas fa-user-slash"></i>
+            <h2>Profile Not Found</h2>
+            <p>The username you're looking for doesn't exist.</p>
+            <a href="index.html" class="back-home-btn">
+                <i class="fas fa-home"></i>
+                Go to MyWebies
+            </a>
+        </div>
+    </div>
+
+    <!-- Skeleton Screen -->
+    <div id="skeletonProfile" class="public-profile-container">
+        <div class="profile-card">
+            <div class="profile-header-public">
+                <div class="skeleton skeleton-avatar"></div>
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-subtitle"></div>
+                <div class="skeleton skeleton-bio"></div>
+            </div>
+            <div class="public-links-list">
+                <div class="skeleton skeleton-link"></div>
+                <div class="skeleton skeleton-link"></div>
+                <div class="skeleton skeleton-link"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real Content (Hidden initially) -->
+    <div id="publicProfile" class="public-profile-container" style="display: none;">
+        <div class="profile-card">
+            <div class="profile-header-public">
+                <img id="publicAvatar" src="" alt="Profile" class="public-avatar">
+                <h1 id="publicDisplayName"></h1>
+                <p id="publicUsername" class="public-username"></p>
+                <p id="publicBio" class="public-bio"></p>
+            </div>
+
+            <div id="publicLinksList" class="public-links-list">
+                <!-- Public links will be dynamically added here -->
+            </div>
+
+            <div class="powered-by">
+                <p>Powered by <a href="index.html">MyWebies</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Floating Share Button -->
+    <button id="shareProfileBtn" class="floating-share-btn" aria-label="Share Profile">
+        <i class="fas fa-share-alt"></i>
+        <span class="share-tooltip">Share Profile</span>
+    </button>
+
+
+    <!-- Firebase SDKs - Using v9 modular SDK with compatibility layer -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get, child } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZZNN4LKEloWXPMDwwQPRJKFX3FpR8yqw",
+            authDomain: "mywebbiee.firebaseapp.com",
+            databaseURL: "https://mywebbiee-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "mywebbiee",
+            storageBucket: "mywebbiee.firebasestorage.app",
+            messagingSenderId: "816897535419",
+            appId: "1:816897535419:web:7fa6038a6751d39d22289e",
+            measurementId: "G-HEFE2449NL"
+        };
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const createCompatibleDatabase = (database) => {
+            return {
+                ref: (path) => {
+                    const dbRef = path ? ref(database, path) : ref(database);
+                    return {
+                        once: (eventType) => get(dbRef)
+                    };
+                }
+            };
+        };
+        window.database = createCompatibleDatabase(database);
+        window.firebaseInitialized = true;
+        window.dispatchEvent(new CustomEvent('firebaseReady'));
+        console.log('Firebase v9 with compatibility layer initialized successfully for profile');
+    </script>
+    <script src="profile.js"></script>
+</body>
+
+</html>

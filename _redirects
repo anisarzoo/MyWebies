@@ -1,0 +1,3 @@
+# Netlify Redirects for MyWebies
+# Match usernames and rewrite to profile.html
+/:username  /profile.html?username=:username  200
