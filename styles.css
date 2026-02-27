@@ -937,27 +937,29 @@ body {
 }
 
 .info-icon {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     cursor: help;
-    transition: color 0.3s ease;
+    color: #667eea;
+    transition: all 0.3s ease;
 }
 
 .info-icon:hover {
-    color: #667eea;
+    transform: scale(1.1);
+    color: #5a6fd8;
 }
 
 .info-tooltip {
     position: absolute;
-    bottom: calc(100% + 10px);
+    top: calc(100% + 10px);
     left: 50%;
-    transform: translateX(-50%) translateY(10px);
+    transform: translateX(-50%) translateY(-10px);
     background: #333;
     color: white;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 8px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 500;
-    width: 200px;
+    width: 220px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     opacity: 0;
@@ -970,12 +972,12 @@ body {
 .info-tooltip::after {
     content: '';
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     border-width: 6px;
     border-style: solid;
-    border-color: #333 transparent transparent transparent;
+    border-color: transparent transparent #333 transparent;
 }
 
 .info-icon-wrapper:hover .info-tooltip {
