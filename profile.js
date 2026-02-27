@@ -99,6 +99,12 @@ async function loadProfile(username) {
             return;
         }
         profileData = userData;
+
+        if (profileData && profileData.theme && profileData.theme !== 'default') {
+            document.body.classList.add(`theme-${profileData.theme}`);
+        }
+        document.body.classList.remove('theme-loading');
+
         console.log('[MyWebies] profileData before displayProfile:', profileData);
         displayProfile();
 
@@ -135,6 +141,7 @@ function displayProfile() {
     } else if (publicBio) {
         publicBio.style.display = 'none';
     }
+
     // Load and display links
     loadAndDisplayLinks();
 
@@ -166,29 +173,50 @@ function loadAndDisplayLinks() {
         return;
     }
 
+    // Group links by category, maintaining the order they appear in
+    const categories = {};
+    const categoryOrder = [];
     linksArray.forEach(link => {
-        const linkElement = document.createElement('a');
-        linkElement.className = 'public-link-item';
-        linkElement.href = link.url;
-        linkElement.target = '_blank';
-        linkElement.rel = 'noopener noreferrer';
+        const cat = link.category || 'General';
+        if (!categories[cat]) {
+            categories[cat] = [];
+            categoryOrder.push(cat);
+        }
+        categories[cat].push(link);
+    });
 
-        // Track link clicks (optional analytics)
-        linkElement.addEventListener('click', () => {
-            trackLinkClick(link.id);
+    categoryOrder.forEach(catName => {
+        // Render category header if not General or if multiple categories exist
+        if (catName !== 'General' || categoryOrder.length > 1) {
+            const header = document.createElement('div');
+            header.className = 'public-category-header';
+            header.innerHTML = `<h3>${catName}</h3>`;
+            publicLinksList.appendChild(header);
+        }
+
+        categories[catName].forEach(link => {
+            const linkElement = document.createElement('a');
+            linkElement.className = 'public-link-item';
+            linkElement.href = link.url;
+            linkElement.target = '_blank';
+            linkElement.rel = 'noopener noreferrer';
+
+            linkElement.addEventListener('click', () => {
+                trackLinkClick(link.id);
+            });
+
+            linkElement.innerHTML = `
+                <div class="public-link-icon">
+                    ${renderLinkIcon(link.icon)}
+                </div>
+                <div class="public-link-content">
+                    <div class="public-link-title">${escapeHtml(link.title)}</div>
+                    <div class="public-link-url">${formatUrl(link.url)}</div>
+                </div>
+            `;
+
+            publicLinksList.appendChild(linkElement);
         });
-
-        linkElement.innerHTML = `
-            <div class="public-link-icon">
-                ${renderLinkIcon(link.icon)}
-            </div>
-            <div class="public-link-content">
-                <div class="public-link-title">${escapeHtml(link.title)}</div>
-                <div class="public-link-url">${formatUrl(link.url)}</div>
-            </div>
-        `;
-
-        publicLinksList.appendChild(linkElement);
     });
 }
 
@@ -253,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 1. Extract username from path (e.g., /anis)
     const pathParts = window.location.pathname.split('/').filter(p => p !== '');
     const lastPart = pathParts[pathParts.length - 1];
-    
+
     // 2. Extract username from query param (e.g., ?username=anis)
     const queryUsername = getUrlParameter('username');
 
@@ -267,21 +295,22 @@ document.addEventListener('DOMContentLoaded', function () {
     if (profileUsername) {
         const currentPath = window.location.pathname;
         const currentSearch = window.location.search;
-        
+
         // If we have a username and the URL is "messy" (has .html or query params)
         if (currentPath.includes('profile.html') || currentSearch.includes('username=')) {
-            // Determine the clean path
-            // If on a subdirectory (like GitHub Pages or similar), we might need to be careful.
-            // But here it seems to be root-level.
-            const cleanUrl = '/' + profileUsername;
-            
-            try {
-                history.replaceState(null, '', cleanUrl);
-            } catch (e) {
-                console.warn('Could not clean URL:', e);
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+            // Only clean the URL on production to prevent 404s on local refresh
+            if (!isLocal) {
+                const cleanUrl = '/' + profileUsername;
+                try {
+                    history.replaceState(null, '', cleanUrl);
+                } catch (e) {
+                    console.warn('Could not clean URL:', e);
+                }
             }
         }
-        
+
         loadProfile(profileUsername);
     } else {
         // If we are on profile.html without a username, it's a 404 situation

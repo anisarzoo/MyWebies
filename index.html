@@ -7,6 +7,7 @@
     <title>MyWebies - Dashboard</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="themes.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Cropper.js CSS -->
     <link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
@@ -62,19 +63,18 @@
                     <div class="profile-details">
                         <h2 id="dashDisplayName"></h2>
                         <p class="profile-url">mywebies.com/<span id="dashUsername"></span></p>
-                        <div class="dashboard-actions" style="display: flex; gap: 10px; align-items: center;">
+                        <div class="dashboard-actions">
                             <button id="editProfileBtn" class="edit-profile-btn">
                                 <i class="fas fa-edit"></i>
-                                Edit
+                                <span>Edit</span>
                             </button>
                             <button id="viewPublicBtn" class="view-public-btn">
                                 <i class="fas fa-external-link-alt"></i>
-                                View
+                                <span>View</span>
                             </button>
-                            <button id="shareProfileBtn" class="view-public-btn" title="Share Profile"
-                                style="background: #764ba2;">
+                            <button id="shareProfileBtn" class="share-btn-dashboard" title="Share Profile">
                                 <i class="fas fa-share-alt"></i>
-                                Share
+                                <span>Share</span>
                             </button>
                         </div>
                     </div>
@@ -138,6 +138,19 @@
                     <label for="linkUrl">URL</label>
                     <input type="url" id="linkUrl" placeholder="https://example.com" required>
                 </div>
+                <div class="form-group">
+                    <label for="linkCategory">Category (Optional)</label>
+                    <input type="text" id="linkCategory" list="categorySuggestions"
+                        placeholder="e.g. Socials, Products, Portfolio">
+                    <datalist id="categorySuggestions">
+                        <option value="Socials">
+                        <option value="Products">
+                        <option value="Portfolio">
+                        <option value="Resources">
+                        <option value="Contact">
+                    </datalist>
+                    <small style="color: #666; font-size: 0.8rem;">Group your links by category</small>
+                </div>
                 <div class="modal-actions">
                     <button id="cancelLinkBtn" class="cancel-btn">Cancel</button>
                     <button id="saveLinkBtn" class="save-btn">Save Link</button>
@@ -199,6 +212,26 @@
                     <label for="editBio">Bio</label>
                     <textarea id="editBio" placeholder="Tell people about yourself..." maxlength="200"
                         style="width: 100%; min-height: 80px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 12px; font-family: inherit; font-size: 1rem; resize: vertical; transition: border-color 0.3s ease;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Profile Theme</label>
+                    <div class="theme-options">
+                        <div class="theme-swatch theme-default active" data-theme="default" title="Default Indigo">
+                        </div>
+                        <div class="theme-swatch theme-dark" data-theme="dark" title="Dark Elegance"></div>
+                        <div class="theme-swatch theme-sunset" data-theme="sunset" title="Sunset Vibes"></div>
+                        <div class="theme-swatch theme-ocean" data-theme="ocean" title="Ocean Breeze"></div>
+                        <div class="theme-swatch theme-emerald" data-theme="emerald" title="Emerald Garden"></div>
+                        <div class="theme-swatch theme-cyberpunk" data-theme="cyberpunk" title="Cyberpunk"></div>
+                        <div class="theme-swatch theme-minimal" data-theme="minimal" title="Minimalist"></div>
+                        <div class="theme-swatch theme-midnight-gold" data-theme="midnight-gold" title="Midnight Gold">
+                        </div>
+                        <div class="theme-swatch theme-rose-quartz" data-theme="rose-quartz" title="Rose Quartz"></div>
+                        <div class="theme-swatch theme-aurora" data-theme="aurora" title="Aurora Neon"></div>
+                        <div class="theme-swatch theme-amethyst" data-theme="amethyst" title="Royal Amethyst"></div>
+                        <div class="theme-swatch theme-mocha" data-theme="mocha" title="Premium Mocha"></div>
+                        <div class="theme-swatch theme-nordic" data-theme="nordic" title="Nordic Clean"></div>
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button id="cancelEditProfileBtn" class="cancel-btn">Cancel</button>

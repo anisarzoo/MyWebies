@@ -45,6 +45,7 @@ const closeModal = document.getElementById('closeModal');
 const linkIcon = document.getElementById('linkIcon');
 const linkTitle = document.getElementById('linkTitle');
 const linkUrl = document.getElementById('linkUrl');
+const linkCategory = document.getElementById('linkCategory');
 const cancelLinkBtn = document.getElementById('cancelLinkBtn');
 const saveLinkBtn = document.getElementById('saveLinkBtn');
 const defaultIconsRow = document.getElementById('defaultIconsRow');
@@ -309,8 +310,11 @@ function loadDashboard() {
     }
     if (typeof bioInput !== 'undefined' && bioInput) {
         // bioInput removed from main dashboard
-        // bioInput.value = currentUser.bio || ''; 
     }
+
+    // Apply Saved Theme
+    currentTheme = currentUser.theme || 'default';
+    applyTheme(currentTheme);
 
     // Set up public profile link
     viewPublicBtn.onclick = () => {
@@ -389,78 +393,154 @@ function renderLinks(links) {
         return;
     }
 
-    links.forEach((link, index) => {
-        const linkElement = document.createElement('div');
-        linkElement.className = 'link-item';
-        linkElement.draggable = true;
-        linkElement.dataset.linkId = link.id;
-        linkElement.dataset.order = index;
+    // Group links by category while maintaining global order
+    const categories = {};
+    const categoryOrder = []; // To track order of categories based on first link
 
-        linkElement.innerHTML = `
-            <div class="drag-handle">
-                <i class="fas fa-grip-vertical"></i>
-            </div>
-            <div class="link-icon">
-                ${renderLinkIcon(link.icon)}
-            </div>
-            <div class="link-content">
-                <div class="link-title">${link.title}</div>
-                <a href="${link.url}" target="_blank" class="link-url">${link.url}</a>
-            </div>
-            <div class="link-actions">
-                <button class="edit-link-btn" onclick="editLink('${link.id}')">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
-                <button class="delete-link-btn" onclick="deleteLink('${link.id}')">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </div>
-        `;
-
-        // Add drag and drop event listeners
-        linkElement.addEventListener('dragstart', handleDragStart);
-        linkElement.addEventListener('dragover', handleDragOver);
-        linkElement.addEventListener('drop', handleDrop);
-        linkElement.addEventListener('dragend', handleDragEnd);
-
-        linksList.appendChild(linkElement);
-        // Helper to render the icon for a link (emoji or FontAwesome)
-        function renderLinkIcon(icon) {
-            if (!icon || icon === '🔗') return '🔗';
-            // If it's a single visible Unicode character or emoji, show as is
-            if (/^\p{Emoji}|\p{Extended_Pictographic}|^[^\x00-\x7F]$/u.test(icon)) return icon;
-            // FontAwesome brand icons
-            const brands = ['twitter', 'snapchat', 'instagram', 'facebook', 'youtube', 'spotify', 'tiktok'];
-            if (brands.includes(icon)) {
-                return `<i class="fab fa-${icon}"></i>`;
-            }
-            // FontAwesome solid icons
-            if (icon === 'location-dot') {
-                return `<i class="fas fa-location-dot"></i>`;
-            }
-            // If not a known icon, but looks like emoji or text, show as is
-            if (/^[\p{L}\p{N}\p{Emoji}\p{Extended_Pictographic}]+$/u.test(icon)) return icon;
-            // Fallback to link icon
-            return '🔗';
+    links.forEach(link => {
+        const cat = link.category || 'General';
+        if (!categories[cat]) {
+            categories[cat] = [];
+            categoryOrder.push(cat);
         }
+        categories[cat].push(link);
+    });
+
+    // Helper to render the icon for a link (emoji or FontAwesome)
+    function renderLinkIcon(icon) {
+        if (!icon || icon === '🔗') return '🔗';
+        if (/^\p{Emoji}|\p{Extended_Pictographic}|^[^\x00-\x7F]$/u.test(icon)) return icon;
+        const brands = ['twitter', 'snapchat', 'instagram', 'facebook', 'youtube', 'spotify', 'tiktok'];
+        if (brands.includes(icon)) {
+            return `<i class="fab fa-${icon}"></i>`;
+        }
+        if (icon === 'location-dot') {
+            return `<i class="fas fa-location-dot"></i>`;
+        }
+        if (/^[\p{L}\p{N}\p{Emoji}\p{Extended_Pictographic}]+$/u.test(icon)) return icon;
+        return '🔗';
+    }
+
+    categoryOrder.forEach(catName => {
+        // Create Category Group
+        const group = document.createElement('div');
+        group.className = 'category-group';
+        group.draggable = true;
+        group.dataset.categoryName = catName;
+
+        // Render Category Header
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        header.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-grip-lines category-drag-handle" style="color: #ccc;"></i>
+                <h4>${catName}</h4>
+            </div>
+            <button class="edit-category-btn" onclick="editCategoryName('${catName.replace(/'/g, "\\'")}')" title="Rename Category">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+        `;
+        group.appendChild(header);
+
+        // Container for links within this category
+        const container = document.createElement('div');
+        container.className = 'category-links-container';
+        group.appendChild(container);
+
+        categories[catName].forEach((link) => {
+            const linkElement = document.createElement('div');
+            linkElement.className = 'link-item';
+            linkElement.draggable = true;
+            linkElement.dataset.linkId = link.id;
+            linkElement.dataset.order = link.order;
+
+            linkElement.innerHTML = `
+                <div class="drag-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <div class="link-icon">
+                    ${renderLinkIcon(link.icon)}
+                </div>
+                <div class="link-content">
+                    <div class="link-title">${link.title}</div>
+                    <a href="${link.url}" target="_blank" class="link-url">${link.url}</a>
+                </div>
+                <div class="link-actions">
+                    <button class="edit-link-btn" onclick="editLink('${link.id}')">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="delete-link-btn" onclick="deleteLink('${link.id}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+
+            // Link event listeners
+            linkElement.addEventListener('dragstart', handleDragStart);
+            linkElement.addEventListener('dragover', handleLinkDragOver);
+            linkElement.addEventListener('drop', handleDrop);
+            linkElement.addEventListener('dragend', handleDragEnd);
+
+            container.appendChild(linkElement);
+        });
+
+        // Group event listeners
+        group.addEventListener('dragstart', handleCategoryDragStart);
+        group.addEventListener('dragover', handleCategoryDragOver);
+        group.addEventListener('drop', handleDrop);
+        group.addEventListener('dragend', handleDragEnd);
+
+        linksList.appendChild(group);
     });
 }
 
 // Drag and Drop Functions
+// Drag and Drop Functions for Links
 function handleDragStart(e) {
+    if (e.target.classList.contains('category-group')) return; // Ignore if group is dragging
     draggedElement = this;
     this.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', this.outerHTML);
 }
 
-function handleDragOver(e) {
+function handleLinkDragOver(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
 
-    const afterElement = getDragAfterElement(linksList, e.clientY);
-    const dragging = document.querySelector('.dragging');
+    const dragging = document.querySelector('.link-item.dragging');
+    if (!dragging) return;
 
+    // Find the nearest container to drop into
+    const container = e.target.closest('.category-links-container');
+    if (!container) return;
+
+    const afterElement = getDragAfterElement(container, e.clientY, '.link-item:not(.dragging)');
+    if (afterElement == null) {
+        container.appendChild(dragging);
+    } else {
+        container.insertBefore(dragging, afterElement);
+    }
+}
+
+// Drag and Drop Functions for Categories
+function handleCategoryDragStart(e) {
+    if (e.target.classList.contains('link-item')) return;
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleCategoryDragOver(e) {
+    e.preventDefault();
+    if (document.querySelector('.link-item.dragging')) {
+        // If a link is being dragged, let handleLinkDragOver handle it
+        return handleLinkDragOver(e);
+    }
+
+    const dragging = document.querySelector('.category-group.dragging');
+    if (!dragging) return;
+
+    const afterElement = getDragAfterElement(linksList, e.clientY, '.category-group:not(.dragging)');
     if (afterElement == null) {
         linksList.appendChild(dragging);
     } else {
@@ -478,8 +558,8 @@ function handleDragEnd(e) {
     draggedElement = null;
 }
 
-function getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.link-item:not(.dragging)')];
+function getDragAfterElement(container, y, selector) {
+    const draggableElements = [...container.querySelectorAll(selector)];
 
     return draggableElements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
@@ -495,20 +575,29 @@ function getDragAfterElement(container, y) {
 
 async function updateLinksOrder() {
     try {
-        const linkElements = [...linksList.querySelectorAll('.link-item')];
+        const groups = [...linksList.querySelectorAll('.category-group')];
         const updates = {};
+        let globalOrder = 0;
 
-        linkElements.forEach((element, index) => {
-            const linkId = element.dataset.linkId;
-            updates[`users/${currentUser.uid}/links/${linkId}/order`] = index;
+        groups.forEach(group => {
+            const catName = group.dataset.categoryName;
+            const links = [...group.querySelectorAll('.link-item')];
+
+            links.forEach(link => {
+                const linkId = link.dataset.linkId;
+                updates[`users/${currentUser.uid}/links/${linkId}/order`] = globalOrder++;
+                updates[`users/${currentUser.uid}/links/${linkId}/category`] = catName;
+            });
         });
 
-        await window.database.ref().update(updates);
-        showToast('Links reordered successfully!', 'success');
+        if (Object.keys(updates).length > 0) {
+            await window.database.ref().update(updates);
+            showToast('Order saved successfully!', 'success');
+        }
     } catch (error) {
-        console.error('Error updating links order:', error);
-        showToast('Failed to reorder links', 'error');
-        loadLinks(); // Reload to reset order
+        console.error('Error updating order:', error);
+        showToast('Failed to save order', 'error');
+        loadLinks();
     }
 }
 
@@ -519,6 +608,7 @@ function showAddLinkModal() {
     linkIcon.value = '';
     linkTitle.value = '';
     linkUrl.value = '';
+    linkCategory.value = '';
     showModal();
 }
 
@@ -533,6 +623,7 @@ function editLink(linkId) {
             linkIcon.value = link.icon || '';
             linkTitle.value = link.title || '';
             linkUrl.value = link.url || '';
+            linkCategory.value = link.category || '';
             showModal();
         })
         .catch(error => {
@@ -549,6 +640,7 @@ async function saveLink() {
     }
     const title = linkTitle.value.trim();
     const url = linkUrl.value.trim();
+    const category = linkCategory.value.trim();
 
     if (!title || !url) {
         showToast('Please fill in all required fields', 'error');
@@ -570,6 +662,7 @@ async function saveLink() {
             icon: icon || '🔗',
             title: title,
             url: url,
+            category: category,
             updatedAt: window.database.ServerValue.TIMESTAMP
         };
 
@@ -603,9 +696,7 @@ async function saveLink() {
 }
 
 async function deleteLink(linkId) {
-    if (!confirm('Are you sure you want to delete this link?')) {
-        return;
-    }
+    if (!confirm('Are you sure you want to delete this link?')) return;
 
     try {
         showLoading();
@@ -615,6 +706,40 @@ async function deleteLink(linkId) {
     } catch (error) {
         console.error('Error deleting link:', error);
         showToast('Failed to delete link', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function editCategoryName(oldName) {
+    const newName = prompt(`Enter new name for category "${oldName}":`, oldName);
+    if (!newName || newName.trim() === oldName) return;
+
+    const trimmedNewName = newName.trim();
+
+    try {
+        showLoading();
+        const snapshot = await window.database.ref(`users/${currentUser.uid}/links`).once('value');
+        const links = snapshot.val() || {};
+        const updates = {};
+
+        Object.keys(links).forEach(linkId => {
+            const currentCat = links[linkId].category || 'General';
+            if (currentCat === oldName) {
+                updates[`users/${currentUser.uid}/links/${linkId}/category`] = trimmedNewName;
+            }
+        });
+
+        if (Object.keys(updates).length > 0) {
+            await window.database.ref().update(updates);
+            showToast(`Category renamed to "${trimmedNewName}"`, 'success');
+            loadLinks();
+        } else {
+            showToast('No links found in this category', 'info');
+        }
+    } catch (error) {
+        console.error('Error renaming category:', error);
+        showToast('Failed to rename category', 'error');
     } finally {
         hideLoading();
     }
@@ -630,7 +755,25 @@ function showEditProfileModal() {
 
     // Show the modal
     editProfileModal.classList.add('active');
+
+    // Set active theme swatch
+    currentTheme = currentUser.theme || 'default';
+    document.querySelectorAll('.theme-swatch').forEach(s => {
+        s.classList.toggle('active', s.dataset.theme === currentTheme);
+    });
+
     uploadProfilePicBtn.focus();
+}
+
+function applyTheme(themeName) {
+    // Remove existing theme classes
+    document.body.classList.forEach(cls => {
+        if (cls.startsWith('theme-')) document.body.classList.remove(cls);
+    });
+    // Add new one
+    if (themeName && themeName !== 'default') {
+        document.body.classList.add(`theme-${themeName}`);
+    }
 }
 
 function hideEditProfileModal() {
@@ -773,6 +916,13 @@ async function saveEditProfile() {
             await window.database.ref(`users/${currentUser.uid}/bio`).set(newBio);
             currentUser.bio = newBio;
         }
+
+        // Update Theme
+        if (currentTheme !== (currentUser.theme || 'default')) {
+            await window.database.ref(`users/${currentUser.uid}/theme`).set(currentTheme);
+            currentUser.theme = currentTheme;
+        }
+
         showToast('Profile updated successfully!', 'success');
         hideEditProfileModal();
     } catch (error) {
@@ -973,16 +1123,24 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 'image/jpeg', 0.95);
     });
 
-    // Modal click outside to close
-    linkModal.addEventListener('click', (e) => {
-        if (e.target === linkModal) {
-            hideModal();
-        }
+    // Theme selection logic
+    document.querySelectorAll('.theme-swatch').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+            const theme = swatch.dataset.theme;
+            document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+            if (typeof applyTheme === 'function') applyTheme(theme);
+            currentTheme = theme;
+        });
     });
 
-    editProfileModal.addEventListener('click', (e) => {
-        if (e.target === editProfileModal) {
-            hideEditProfileModal();
+    // Handle clicks outside of modals to close them
+    window.addEventListener('click', (e) => {
+        if (e.target === linkModal) hideModal();
+        if (e.target === editProfileModal) hideEditProfileModal();
+        if (e.target === cropModal) {
+            if (cropper) { cropper.destroy(); cropper = null; }
+            cropModal.style.display = 'none';
         }
     });
 
@@ -1005,3 +1163,4 @@ document.addEventListener('DOMContentLoaded', function () {
 // Make functions globally available for onclick handlers
 window.editLink = editLink;
 window.deleteLink = deleteLink;
+window.editCategoryName = editCategoryName;
