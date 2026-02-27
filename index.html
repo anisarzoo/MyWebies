@@ -162,31 +162,13 @@
                         <img id="currentProfilePic" src="" alt="Current Profile Picture" class="current-profile-pic">
                         <div class="profile-pic-actions">
                             <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
-                            <button type="button" id="uploadProfilePicBtn" class="upload-pic-btn">
+                            <button type="button" id="uploadProfilePicBtn" class="upload-pic-btn"
+                                title="Choose New Picture">
                                 <i class="fas fa-camera"></i>
-                                Choose New Picture
                             </button>
                             <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 8px;">
-                                Upload a custom profile picture or keep your Google profile picture.
+                                Custom picture or keep Google profile picture.
                             </small>
-                        </div>
-                    </div>
-                    <!-- Crop Modal -->
-                    <div id="cropModal"
-                        style="display:none; position:fixed; z-index:10001; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
-                        <div
-                            style="background:#fff; padding:24px; border-radius:12px; max-width:90vw; max-height:90vh; display:flex; flex-direction:column; align-items:center;">
-                            <h3 style="margin-bottom:12px;">Crop your picture</h3>
-                            <div style="max-width:350px; max-height:350px; overflow:hidden;">
-                                <img id="cropImage" style="max-width:100%; max-height:350px; display:block;" />
-                            </div>
-                            <div style="margin-top:16px; display:flex; gap:12px;">
-                                <button id="cropCancelBtn"
-                                    style="padding:8px 18px; border:none; background:#ccc; border-radius:6px;">Cancel</button>
-                                <button id="cropConfirmBtn"
-                                    style="padding:8px 18px; border:none; background:#667eea; color:#fff; border-radius:6px;">Crop
-                                    & Upload</button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -200,8 +182,8 @@
                     <label for="editUsername">Username</label>
                     <input type="text" id="editUsername" placeholder="Your username" maxlength="20">
                     <div id="editUsernameStatus" class="username-status"></div>
-                    <small style="color: #666; font-size: 0.8rem;">Username must be unique, 3-20 characters, letters,
-                        numbers, and underscores only.</small>
+                    <small style="color: #666; font-size: 0.8rem;">Username must be 3-20 chars (letters, numbers,
+                        _).</small>
                 </div>
                 <div class="form-group">
                     <label for="editBio">Bio</label>
@@ -210,7 +192,7 @@
                 </div>
                 <div class="modal-actions">
                     <button id="cancelEditProfileBtn" class="cancel-btn">Cancel</button>
-                    <button id="saveEditProfileBtn" class="save-btn">Save Changes</button>
+                    <button id="saveEditProfileBtn" class="save-btn">Save</button>
                     <button id="logoutBtn" class="logout-btn">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
