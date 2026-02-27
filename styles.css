@@ -1274,4 +1274,22 @@ body {
     .drag-handle {
         display: none !important;
     }
+
+    /* Dashboard Actions Mobile Fix */
+    .dashboard-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+    }
+
+    .dashboard-actions .view-public-btn,
+    .dashboard-actions .edit-profile-btn {
+        padding: 10px 12px !important;
+        font-size: 0.85rem !important;
+        flex: 1;
+        min-width: 0; /* Allow shrinking */
+        justify-content: center;
+        white-space: nowrap;
+    }
 }
