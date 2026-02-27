@@ -887,24 +887,101 @@ body {
     flex: 1;
 }
 
-.upload-pic-btn {
+.profile-pic-buttons {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    gap: 12px;
+}
+
+.upload-pic-btn,
+.remove-pic-btn {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
+    border: none;
+    font-size: 1.1rem;
+}
+
+.upload-pic-btn {
+    background: #667eea;
+    color: white;
 }
 
 .upload-pic-btn:hover {
     background: #5a6fd8;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.remove-pic-btn {
+    background: #fee2e2;
+    color: #dc3545;
+}
+
+.remove-pic-btn:hover {
+    background: #fecaca;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
+.info-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    color: #999;
+}
+
+.info-icon {
+    font-size: 1.2rem;
+    cursor: help;
+    transition: color 0.3s ease;
+}
+
+.info-icon:hover {
+    color: #667eea;
+}
+
+.info-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    width: 180px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.info-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.info-icon-wrapper:hover .info-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
 }
 
 

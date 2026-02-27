@@ -162,13 +162,21 @@
                         <img id="currentProfilePic" src="" alt="Current Profile Picture" class="current-profile-pic">
                         <div class="profile-pic-actions">
                             <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
-                            <button type="button" id="uploadProfilePicBtn" class="upload-pic-btn"
-                                title="Choose New Picture">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                            <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 8px;">
-                                Custom picture or keep Google profile picture.
-                            </small>
+                            <div class="profile-pic-buttons">
+                                <button type="button" id="uploadProfilePicBtn" class="upload-pic-btn"
+                                    title="Upload New Picture">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                                <button type="button" id="removeProfilePicBtn" class="remove-pic-btn"
+                                    title="Remove Custom Picture">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                                <div class="info-icon-wrapper">
+                                    <i class="fas fa-info-circle info-icon"></i>
+                                    <span class="info-tooltip">Upload a custom picture or keep your Google profile
+                                        picture.</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

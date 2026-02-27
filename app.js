@@ -89,6 +89,7 @@ const saveEditProfileBtn = document.getElementById('saveEditProfileBtn');
 const currentProfilePic = document.getElementById('currentProfilePic');
 const profilePictureInput = document.getElementById('profilePictureInput');
 const uploadProfilePicBtn = document.getElementById('uploadProfilePicBtn');
+const removeProfilePicBtn = document.getElementById('removeProfilePicBtn');
 
 // Cropper elements
 const cropModal = document.getElementById('cropModal');
@@ -635,6 +636,37 @@ function hideEditProfileModal() {
     editProfileModal.classList.remove('active');
 }
 
+async function removeProfilePicture() {
+    if (!currentUser) return;
+
+    // Fallback to Google photo URL or empty if none
+    const googlePhotoURL = window.auth.currentUser.photoURL;
+
+    if (currentUser.photoURL === googlePhotoURL) {
+        showToast('Already using Google profile picture', 'info');
+        return;
+    }
+
+    try {
+        showLoading();
+        // Update database with Google's photo URL
+        await window.database.ref(`users/${currentUser.uid}/photoURL`).set(googlePhotoURL);
+
+        // Update current user state
+        currentUser.photoURL = googlePhotoURL;
+
+        // Update UI
+        updateProfilePictureInUI(googlePhotoURL);
+
+        showToast('Reverted to Google profile picture', 'success');
+    } catch (error) {
+        console.error('Error removing profile picture:', error);
+        showToast('Failed to remove custom picture', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
 async function uploadProfilePicture(file) {
     try {
         showLoading();
@@ -883,6 +915,10 @@ document.addEventListener('DOMContentLoaded', function () {
     uploadProfilePicBtn.addEventListener('click', () => {
         profilePictureInput.click();
     });
+
+    if (removeProfilePicBtn) {
+        removeProfilePicBtn.addEventListener('click', removeProfilePicture);
+    }
 
     profilePictureInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
