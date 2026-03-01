@@ -418,6 +418,10 @@ if (shareProfileBtn) {
 // Helper to render the icon for a link (emoji or FontAwesome)
 function renderLinkIcon(icon) {
     if (!icon || icon === '🔗') return '🔗';
+    // Check if icon is an absolute URL (starts with http)
+    if (icon.startsWith('http')) {
+        return `<img src="${icon}" style="width: 24px; height: 24px; border-radius: 4px; object-fit: cover;" alt="Icon">`;
+    }
     // If it's a single visible Unicode character or emoji, show as is
     if (/^\p{Emoji}|\p{Extended_Pictographic}|^[^\x00-\x7F]$/u.test(icon)) return icon;
     // FontAwesome brand icons

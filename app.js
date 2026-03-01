@@ -49,6 +49,8 @@ const linkCategory = document.getElementById('linkCategory');
 const cancelLinkBtn = document.getElementById('cancelLinkBtn');
 const saveLinkBtn = document.getElementById('saveLinkBtn');
 const defaultIconsRow = document.getElementById('defaultIconsRow');
+const uploadLinkIconBtn = document.getElementById('uploadLinkIconBtn');
+const linkIconUpload = document.getElementById('linkIconUpload');
 
 // Add click handlers for default icon suggestions
 if (defaultIconsRow && linkIcon) {
@@ -98,6 +100,7 @@ const cropImage = document.getElementById('cropImage');
 const cropCancelBtn = document.getElementById('cropCancelBtn');
 const cropConfirmBtn = document.getElementById('cropConfirmBtn');
 let cropper = null;
+let currentCropType = 'profile'; // 'profile' or 'linkIcon'
 
 // Utility Functions
 function showLoading() {
@@ -409,6 +412,10 @@ function renderLinks(links) {
     // Helper to render the icon for a link (emoji or FontAwesome)
     function renderLinkIcon(icon) {
         if (!icon || icon === '🔗') return '🔗';
+        // Check if icon is an absolute URL (starts with http)
+        if (icon.startsWith('http')) {
+            return `<img src="${icon}" style="width: 24px; height: 24px; border-radius: 4px; object-fit: cover;" alt="Icon">`;
+        }
         if (/^\p{Emoji}|\p{Extended_Pictographic}|^[^\x00-\x7F]$/u.test(icon)) return icon;
         const brands = ['twitter', 'snapchat', 'instagram', 'facebook', 'youtube', 'spotify', 'tiktok'];
         if (brands.includes(icon)) {
@@ -635,7 +642,8 @@ function editLink(linkId) {
 async function saveLink() {
     let icon = linkIcon.value.trim();
     // Only allow emoji or simple icon name (no spaces or FontAwesome classes)
-    if (icon && icon.length > 1 && icon.includes(' ')) {
+    // Don't split if it's a URL
+    if (icon && !icon.startsWith('http') && icon.length > 1 && icon.includes(' ')) {
         icon = icon.split(' ')[0];
     }
     const title = linkTitle.value.trim();
@@ -844,6 +852,39 @@ async function uploadProfilePicture(file) {
     } catch (error) {
         console.error('Error uploading profile picture:', error);
         showToast('Failed to upload profile picture', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function uploadLinkIcon(file) {
+    try {
+        showLoading();
+        const url = 'https://api.cloudinary.com/v1_1/du4nn0zz6/image/upload';
+        const preset = 'MyWebies';
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', preset);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        if (!response.ok || !data.secure_url) {
+            throw new Error(data.error?.message || 'Upload failed');
+        }
+        const downloadURL = data.secure_url;
+
+        // Update the input value with the URL
+        if (linkIcon) {
+            linkIcon.value = downloadURL;
+        }
+
+        showToast('Link icon uploaded and compressed!', 'success');
+    } catch (error) {
+        console.error('Error uploading link icon:', error);
+        showToast('Failed to upload link icon', 'error');
     } finally {
         hideLoading();
     }
@@ -1075,17 +1116,15 @@ document.addEventListener('DOMContentLoaded', function () {
     profilePictureInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Validate file type
             if (!file.type.startsWith('image/')) {
                 showToast('Please select an image file', 'error');
                 return;
             }
-            // Validate file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
                 showToast('Image size must be less than 5MB', 'error');
                 return;
             }
-            // Show crop modal
+            currentCropType = 'profile';
             const reader = new FileReader();
             reader.onload = function (ev) {
                 cropImage.src = ev.target.result;
@@ -1105,6 +1144,44 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Link icon upload
+    if (uploadLinkIconBtn && linkIconUpload) {
+        uploadLinkIconBtn.addEventListener('click', () => {
+            linkIconUpload.click();
+        });
+
+        linkIconUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    showToast('Please select an image file', 'error');
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('Image size must be less than 5MB', 'error');
+                    return;
+                }
+                currentCropType = 'linkIcon';
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    cropImage.src = ev.target.result;
+                    cropModal.style.display = 'flex';
+                    if (cropper) { cropper.destroy(); }
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        movable: true,
+                        zoomable: true,
+                        rotatable: false,
+                        scalable: false
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
     cropCancelBtn.addEventListener('click', () => {
         if (cropper) { cropper.destroy(); cropper = null; }
         cropModal.style.display = 'none';
@@ -1114,12 +1191,25 @@ document.addEventListener('DOMContentLoaded', function () {
     cropConfirmBtn.addEventListener('click', async () => {
         if (!cropper) return;
         showLoading();
-        cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob(async (blob) => {
+
+        // Use different dimensions based on crop type
+        const cropOptions = currentCropType === 'profile'
+            ? { width: 400, height: 400 }
+            : { width: 128, height: 128 };
+
+        cropper.getCroppedCanvas(cropOptions).toBlob(async (blob) => {
             cropModal.style.display = 'none';
             if (cropper) { cropper.destroy(); cropper = null; }
-            await uploadProfilePicture(blob);
+
+            if (currentCropType === 'profile') {
+                await uploadProfilePicture(blob);
+            } else {
+                await uploadLinkIcon(blob);
+            }
+
             hideLoading();
             profilePictureInput.value = '';
+            if (linkIconUpload) linkIconUpload.value = '';
         }, 'image/jpeg', 0.95);
     });
 
